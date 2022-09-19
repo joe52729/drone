@@ -1,0 +1,35 @@
+version: '2.3'
+
+services:
+  drone-server:
+    image: drone/drone:1
+    ports:
+      - 10081:80
+    volumes:
+      - ./:/data
+    restart: always
+    environment:
+      - DRONE_SERVER_HOST=cb5c-61-216-162-103.jp.ngrok.io
+      - DRONE_SERVER_PROTO=https
+      - DRONE_RPC_SECRET=c781e0b8bd55ca4c299404fa369c1536
+      - DRONE_AGENTS_ENABLED=true
+      # Gitlab Config
+      - DRONE_GITLAB_SERVER=https://gitlab.sp168.cc/
+      - DRONE_GITLAB_CLIENT_ID=ccd49553e7b992e39956a4156da85c312908524d7fc5d1af593f349b45026712
+      - DRONE_GITLAB_CLIENT_SECRET=12d4f6200b0473cdb788656ef8518448e1ce257e17c16b57ae19a694deb077ed
+      - DRONE_LOGS_PRETTY=true
+      - DRONE_LOGS_COLOR=true
+
+  drone-runner:
+    image: drone/drone-runner-docker:1
+    restart: always
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_RPC_HOST=cb5c-61-216-162-103.jp.ngrok.io
+      - DRONE_RPC_PROTO=https
+      - DRONE_RUNNER_NAME=my-first-runner
+      - DRONE_RUNNER_CAPACITY=2
+      - DRONE_RPC_SECRET=c781e0b8bd55ca4c299404fa369c1536
